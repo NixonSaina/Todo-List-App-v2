@@ -8,20 +8,6 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState(0);
 
-  // Load tasks and input values from localStorage on initial render
-  useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    setTasks(savedTasks);
-
-    const savedTask = localStorage.getItem("task") || "";
-    setTask(savedTask);
-
-    const savedDueDate = localStorage.getItem("dueDate") || "";
-    setDueDate(savedDueDate);
-
-    const savedPriority = localStorage.getItem("priority") || "low";
-    setPriority(savedPriority);
-  }, []);
 
   // Save tasks and update completed tasks whenever the tasks array changes
   useEffect(() => {
