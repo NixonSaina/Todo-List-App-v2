@@ -7,7 +7,7 @@ function App() {
   const [priority, setPriority] = useState("low");
   const [tasks, setTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState(0);
-
+// Insert loca; storage function
 
   // Save tasks and update completed tasks whenever the tasks array changes
   useEffect(() => {
