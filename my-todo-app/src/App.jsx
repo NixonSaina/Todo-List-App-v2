@@ -7,7 +7,13 @@ function App() {
   const [priority, setPriority] = useState("low");
   const [tasks, setTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState(0);
-// Insert loca; storage function
+  const [editingTaskId, setEditingTaskId] = useState(null); // Track the editing task ID
+
+  // Load tasks from localStorage when the app starts
+  useEffect(() => {
+    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    setTasks(savedTasks);
+  }, []);
 
   // Save tasks and update completed tasks whenever the tasks array changes
   useEffect(() => {
@@ -16,24 +22,43 @@ function App() {
     setCompletedTasks(totalCompleted);
   }, [tasks]);
 
-  // Persist task input fields in localStorage as they change
+  // Persist task input fields in localStorage
   useEffect(() => {
-    localStorage.setItem("task", task);
-    localStorage.setItem("dueDate", dueDate);
-    localStorage.setItem("priority", priority);
+    localStorage.setItem("taskInput", JSON.stringify({ task, dueDate, priority }));
   }, [task, dueDate, priority]);
 
+  // Restore task input fields from localStorage on app load
+  useEffect(() => {
+    const savedInputs = JSON.parse(localStorage.getItem("taskInput"));
+    if (savedInputs) {
+      setTask(savedInputs.task || "");
+      setDueDate(savedInputs.dueDate || "");
+      setPriority(savedInputs.priority || "low");
+    }
+  }, []);
+
   const handleAddTask = () => {
-    if (!task.trim()) return;  // Avoid adding empty tasks
+    if (!task.trim() || !dueDate) return; // Avoid adding empty tasks or tasks without a due date
+
     const newTask = {
-      id: Date.now(),
+      id: editingTaskId || Date.now(),
       text: task,
       dueDate,
       priority,
       completed: false,
     };
-    setTasks([...tasks, newTask]);
-    setTask("");  // Clear input fields
+
+    if (editingTaskId) {
+      // Update task in edit mode
+      setTasks(tasks.map((t) => (t.id === editingTaskId ? newTask : t)));
+      setEditingTaskId(null); // Exit edit mode
+    } else {
+      // Add new task
+      setTasks([...tasks, newTask]);
+    }
+
+    // Clear input fields after task is added/updated
+    setTask("");
     setDueDate("");
     setPriority("low");
   };
@@ -50,7 +75,7 @@ function App() {
     setTask(taskToEdit.text);
     setDueDate(taskToEdit.dueDate);
     setPriority(taskToEdit.priority);
-    setTasks(tasks.filter((task) => task.id !== taskId));  // Remove old task for editing
+    setEditingTaskId(taskId); // Set the editing task ID
   };
 
   const handleDeleteTask = (taskId) => {
@@ -100,7 +125,7 @@ function App() {
           <option value="medium">Medium Priority</option>
           <option value="low">Low Priority</option>
         </select>
-        <button onClick={handleAddTask}>Add Task</button>
+        <button onClick={handleAddTask}>{editingTaskId ? "Update Task" : "Add Task"}</button>
       </div>
 
       <div className="progress-bar">
