@@ -141,7 +141,7 @@ function App() {
         </div>
         <div className="column">
           <h2>Medium Priority</h2>
-          {renderTasksByPriority("medium", "blue")}
+          {renderTasksByPriority("light", "blue")}
         </div>
         <div className="column">
           <h2>Low Priority</h2>
